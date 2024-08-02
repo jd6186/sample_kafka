@@ -6,7 +6,7 @@ Docker를 통한 Zookeeper 앙상블 구현 및 Spring Kafka를 활용한 Kafka 
 관련 문서는 다음 두 블로그를 참고해주세요.
 
 1. [Kafka 개념](https://jd6186.github.io/KafkaBasic/)
-2. [Spring Kafka를 통한 활용 방법]()
+2. [Kafka 클러스터 구축 및 활용 방법](https://jd6186.github.io/MakeKafkaCluster/)
 
 # 개발 환경
 - Spring Kafka
