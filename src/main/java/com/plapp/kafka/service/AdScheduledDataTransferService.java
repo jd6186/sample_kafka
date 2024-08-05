@@ -1,14 +1,13 @@
 package com.plapp.kafka.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plapp.core.entity.DailyAdStatisticsEntity;
 import com.plapp.core.repository.DailyAdStatisticsRepository;
 import com.plapp.kafka.code.EventType;
 import com.plapp.kafka.code.TopicTypeCode;
 import com.plapp.kafka.dto.AdMessageDto;
+import com.plapp.kafka.producer.KafkaProducer;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,13 +22,13 @@ import java.util.stream.Collectors;
 @Service
 public class AdScheduledDataTransferService {
     private final RedisTemplate<String, String> redisTemplate;
-    private final KafkaTemplate<String, String> kafkaTemplate;
     private final DailyAdStatisticsRepository dailyAdStatisticsRepository;
+    private final KafkaProducer kafkaProducer;
 
-    public AdScheduledDataTransferService(RedisTemplate<String, String> redisTemplate, KafkaTemplate<String, String> kafkaTemplate, DailyAdStatisticsRepository dailyAdStatisticsRepository) {
+    public AdScheduledDataTransferService(RedisTemplate<String, String> redisTemplate, DailyAdStatisticsRepository dailyAdStatisticsRepository, KafkaProducer kafkaProducer) {
         this.redisTemplate = redisTemplate;
-        this.kafkaTemplate = kafkaTemplate;
         this.dailyAdStatisticsRepository = dailyAdStatisticsRepository;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public void adScheduled(AdMessageDto adMessageDto) throws JsonProcessingException {
@@ -72,10 +71,7 @@ public class AdScheduledDataTransferService {
         for (int hour=0; hour < 24; hour++) {
             adMessageDto.setAdId(adId);
             adMessageDto.setHour(String.format("%02d", hour));
-            kafkaTemplate.send(
-                    TopicTypeCode.AD_SCHEDULED_DATA_TRANSFER.getCode(),
-                    new ObjectMapper().writeValueAsString(adMessageDto)
-            );
+            kafkaProducer.sendMessage(TopicTypeCode.AD_SCHEDULED_DATA_TRANSFER, adMessageDto);
         }
     }
 

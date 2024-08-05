@@ -1,18 +1,18 @@
 package com.plapp.kafka.error;
 
+import com.plapp.kafka.producer.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class ErrorHandler {
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaProducer kafkaProducer;
 
-    public ErrorHandler(KafkaTemplate<String, String> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
+    public ErrorHandler(KafkaProducer kafkaProducer) {
+        this.kafkaProducer = kafkaProducer;
     }
 
     private static final String RETRY_COUNT_HEADER = "retry-count"; // 현재 재시도 횟수가 적힌 헤더 이름
@@ -27,7 +27,8 @@ public class ErrorHandler {
             if (retryCount < maxRetryCount) {
                 // 최대 재시도 횟수를 초과하지 않은 경우 재시도 메시지 전송
                 record.headers().add(RETRY_COUNT_HEADER, Integer.toString(retryCount + 1).getBytes());
-                kafkaTemplate.send(record.topic(), record.key(), record.value());
+                kafkaProducer.sendMessage(record);
+                acknowledgment.acknowledge();
             } else {
                 // 최대 재시도 횟수를 초과한 경우 로그 남기고 메시지 소비
                 log.error("Message failed after {} retries, forcibly consuming the message: {}", maxRetryCount, record.value());
