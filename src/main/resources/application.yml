@@ -5,13 +5,14 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: latest
+      enable-auto-commit: false
       properties:
         heartbeat.interval.ms: 1000  # heartbeat 간격을 1초로 설정
         session.timeout.ms: 15000    # session timeout을 15초로 설정
         max.poll.interval.ms: 300000 # 최대 poll 간격을 5분으로 설정
     listener:
       poll-timeout: 3000
-      ack-mode: RECORD
+      ack-mode: MANUAL
       missing-topics-fatal: false
   data:
     redis:
