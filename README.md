@@ -50,4 +50,7 @@ Docker를 통한 Zookeeper 앙상블 구현 및 Spring Kafka를 활용한 Kafka 
 
 4. IntelliJ IDEA를 통해 Spring Kafka 프로젝트를 실행합니다.
 
-5. 사용하시는 API 테스트 툴을 통해 API를 호출합니다.
+5. 사용하시는 API 테스트 툴을 통해 API를 호출합니다.(아래는 간단할게 curl로 테스트하는 방법)
+```shell
+curl -X POST http://localhost:8080/ad/click -H "Content-Type: application/json" -d '{"userId": 1, "adId": 1}'
+```
